@@ -269,7 +269,7 @@ class MoonshotBot(Bot):
         for item in _messages:
             if item['content'].endswith('.jpg') or item['content'].endswith('.png') or item['content'].endswith('.jpeg'):
                 text_content = {"type": "text", "text": "根据上下文解读图片内容"}
-                image_content = {"type": "image_url", "image_url": item['content']}
+                image_content = {"type": "image_url", "image_url": item['content'].replace(".png", ".jpg")}
                 new_item = {'role': item['role'], 'content': [text_content, image_content]}
             else:
                 content = {"type": "text", "text": item['content']}
