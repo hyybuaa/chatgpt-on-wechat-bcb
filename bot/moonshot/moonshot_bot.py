@@ -215,6 +215,7 @@ class MoonshotBot(Bot):
             body = args
             body["messages"] = self.multimodal_message(session.messages[1:])
             logger.info("输入大模型的多模态messages: {}".format(body["messages"]))
+            logger.info("输入大模型的多模态body: {}".format(body))
             # logger.debug("[MOONSHOT_AI] response={}".format(response))
             # logger.info("[MOONSHOT_AI] reply={}, total_tokens={}".format(response.choices[0]['message']['content'], response["usage"]["total_tokens"]))
             res = requests.post(
