@@ -85,6 +85,7 @@ class MoonshotBot(Bot):
             context.get("msg").prepare()
             file_path = context.content   
             os.system("mv {} {}".format(file_path, file_path.replace("png", "jpg")))
+            context.content = file_path.replace("png", "jpg")
             session_id = context["session_id"]
             reply = None
             clear_memory_commands = conf().get("clear_memory_commands", ["#清除记忆"])
