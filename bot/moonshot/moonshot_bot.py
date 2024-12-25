@@ -86,6 +86,7 @@ class MoonshotBot(Bot):
             file_path = context.content   
             os.system("mv {} {}".format(file_path, file_path.replace("png", "jpg")))
             context.content = file_path.replace("png", "jpg")
+            os.system("chmod 755 {}".format(context.content))
             session_id = context["session_id"]
             reply = None
             clear_memory_commands = conf().get("clear_memory_commands", ["#清除记忆"])
