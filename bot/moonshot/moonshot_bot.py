@@ -211,7 +211,7 @@ class MoonshotBot(Bot):
         try:
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer " + self.api_key
+                "API-Key": self.api_key
             }
             body = args
             body["messages"] = self.multimodal_message(session.messages[1:])
