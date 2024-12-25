@@ -24,7 +24,6 @@ class OpenAIBot(Bot, OpenAIImage):
         openai.api_key = conf().get("open_ai_api_key")
         if conf().get("open_ai_api_base"):
             openai.api_base = conf().get("open_ai_api_base")
-        openai.base_url = "http://1.92.69.23:12003/v1/chat/completions"
         proxy = conf().get("proxy")
         if proxy:
             openai.proxy = proxy
@@ -73,15 +72,6 @@ class OpenAIBot(Bot, OpenAIImage):
                         self.sessions.session_reply(reply_content, session_id, total_tokens)
                         reply = Reply(ReplyType.TEXT, reply_content)
                 return reply
-            if context.type == ContextType.IMAGE:
-                # total_tokens, completion_tokens, reply_content = (
-                #         result["total_tokens"],
-                #         result["completion_tokens"],
-                #         result["content"],
-                #     )
-                # reply = Reply(ReplyType.TEXT, reply_content)
-                reply = Reply(ReplyType.TEXT, "已经收到图片信息")
-                return reply
             elif context.type == ContextType.IMAGE_CREATE:
                 ok, retstring = self.create_img(query, 0)
                 reply = None
@@ -92,46 +82,6 @@ class OpenAIBot(Bot, OpenAIImage):
                 return reply
 
     def reply_text(self, session: OpenAISession, retry_count=0):
-        try:
-            response = openai.Completion.create(prompt=str(session), **self.args)
-            res_content = response.choices[0]["text"].strip().replace("<|endoftext|>", "")
-            total_tokens = response["usage"]["total_tokens"]
-            completion_tokens = response["usage"]["completion_tokens"]
-            logger.info("[OPEN_AI] reply={}".format(res_content))
-            return {
-                "total_tokens": total_tokens,
-                "completion_tokens": completion_tokens,
-                "content": res_content,
-            }
-        except Exception as e:
-            need_retry = retry_count < 2
-            result = {"completion_tokens": 0, "content": "我现在有点累了，等会再来吧"}
-            if isinstance(e, openai.error.RateLimitError):
-                logger.warn("[OPEN_AI] RateLimitError: {}".format(e))
-                result["content"] = "提问太快啦，请休息一下再问我吧"
-                if need_retry:
-                    time.sleep(20)
-            elif isinstance(e, openai.error.Timeout):
-                logger.warn("[OPEN_AI] Timeout: {}".format(e))
-                result["content"] = "我没有收到你的消息"
-                if need_retry:
-                    time.sleep(5)
-            elif isinstance(e, openai.error.APIConnectionError):
-                logger.warn("[OPEN_AI] APIConnectionError: {}".format(e))
-                need_retry = False
-                result["content"] = "我连接不到你的网络"
-            else:
-                logger.warn("[OPEN_AI] Exception: {}".format(e))
-                need_retry = False
-                self.sessions.clear_session(session.session_id)
-
-            if need_retry:
-                logger.warn("[OPEN_AI] 第{}次重试".format(retry_count + 1))
-                return self.reply_text(session, retry_count + 1)
-            else:
-                return result
-
-    def reply_image(self, session: OpenAISession, retry_count=0):
         try:
             response = openai.Completion.create(prompt=str(session), **self.args)
             res_content = response.choices[0]["text"].strip().replace("<|endoftext|>", "")
