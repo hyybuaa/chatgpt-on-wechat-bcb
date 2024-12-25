@@ -80,6 +80,9 @@ class MoonshotBot(Bot):
             return reply
         elif context.type == ContextType.IMAGE:
             logger.info("[MOONSHOT_AI] query={}".format(query))
+            # 文件处理
+            context.get("msg").prepare()
+            file_path = context.content     
             session_id = context["session_id"]
             reply = None
             clear_memory_commands = conf().get("clear_memory_commands", ["#清除记忆"])
